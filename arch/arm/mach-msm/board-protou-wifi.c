@@ -7,7 +7,12 @@
 #include <asm/gpio.h>
 #include <asm/io.h>
 #include <linux/skbuff.h>
+
+#ifdef CONFIG_BCMDHD
+#include <linux/wlan_plat.h>
+#else
 #include <linux/wifi_tiwlan.h>
+#endif
 
 #include "board-protou-wifi.h"
 
@@ -132,7 +137,7 @@ static struct resource protou_wifi_resources[] = {
 		.name		= "bcm4329_wlan_irq",
 		.start		= MSM_GPIO_TO_INT(PROTOU_GPIO_WIFI_IRQ),
 		.end		= MSM_GPIO_TO_INT(PROTOU_GPIO_WIFI_IRQ),
-#ifdef HW_OOB
+#ifdef CONFIG_BCMDHD
 		.flags          = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE,
 #else
 		.flags          = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHEDGE,
@@ -146,7 +151,9 @@ static struct wifi_platform_data protou_wifi_control = {
 	.set_carddetect = bcm4330_wifi_set_carddetect,
 	.mem_prealloc   = protou_wifi_mem_prealloc,
 	.get_mac_addr	= protou_wifi_get_mac_addr,
-	
+#ifndef CONFIG_BCMDHD
+	.dot11n_enable  = 1,
+#endif
 };
 
 static struct platform_device protou_wifi_device = {
